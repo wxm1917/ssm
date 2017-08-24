@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context  
+    	http://www.springframework.org/schema/context/spring-context-4.0.xsd  
+     	http://www.springframework.org/schema/tx 
+        http://www.springframework.org/schema/tx/spring-tx-4.0.xsd           
+        http://www.springframework.org/schema/aop 
+        http://www.springframework.org/schema/aop/spring-aop-4.0.xsd 
+        http://www.springframework.org/schema/mvc 
+		http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+		http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd"
+	default-autowire="byName" default-lazy-init="true">
+	
+	<mvc:annotation-driven></mvc:annotation-driven>
+
+	<context:component-scan base-package="com.vatestar.cm.*" />
+	<context:component-scan base-package="com.vatestar.server.*" />
+
+	<mvc:view-controller path="/" view-name="index" />
+
+	<mvc:default-servlet-handler />
+	<mvc:resources mapping="/resources/**" location="/resources/" />
+
+	<!-- 视图解释类 -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/jsp" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+ 	<bean id="objectMapper" class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean">
+		<property name="featuresToDisable">
+			<array>
+				<util:constant
+					static-field="com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES" />
+				<util:constant
+					static-field="com.fasterxml.jackson.databind.SerializationFeature.WRITE_NULL_MAP_VALUES" />
+			</array>
+		</property>
+		<property name="simpleDateFormat" value="yyyy-MM-dd HH:mm:ss" />
+		<property name="serializationInclusion">
+			<util:constant static-field="com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL" />
+		</property>
+	</bean>
+
+	<!-- 上传文件拦截，设置最大上传文件大小 50M=5*10*1024*1024(B)=5*10485760=52428800 bytes -->
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver" p:defaultEncoding="utf-8" >
+		<property name="maxUploadSize" value="52428800" />
+	</bean>
+	
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" scope="singleton" p:properties-ref="config" />
+
+	<aop:aspectj-autoproxy />
+
+	<bean id="org.codehaus.jackson.map.ObjectMapper" class="org.codehaus.jackson.map.ObjectMapper"></bean>
+
+	<import resource="classpath*:/config/application-config.xml" />
+	<import resource="classpath*:/config/application-config-*.xml" />
+</beans>

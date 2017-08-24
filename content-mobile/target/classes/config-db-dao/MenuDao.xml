@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.vatestar.cm.dao.MenuDao">
+    
+    <resultMap type="com.vatestar.cm.entity.Menu" id="menuMap" autoMapping="true" >
+    	<id property="id" column="id"/>
+		<result property="parentId" column="parent_id"/>
+		<result property="menuName" column="menu_name"/>
+		<result property="menuUrl" column="menu_url"/>
+		<result property="createTime" column="create_time"/>
+		<result property="orderNum" column="order_num"/>
+    </resultMap>
+
+	<resultMap type="com.vatestar.cm.entity.Menu" id="menuMap1" >
+		<id property="id" column="id"/>
+		<result property="menuName" column="menu_name"/>
+		<result property="parentId" column="parent_id"/>
+		<result property="menuUrl" column="menu_url"/>
+		<result property="createTime" column="createTime"/>
+        <result property="orderNum" column="order_num"/>
+		<collection property="model" column="id" select="selectNemusByParentId">
+			<result property="parentId" column="id"/>
+		</collection>
+	</resultMap>
+	<resultMap type="com.vatestar.cm.entity.Menu" id="childMenuMap" >
+		<id property="id" column="id"/>
+		<result property="parentId" column="parent_id"/>
+		<result property="menuName" column="menu_name"/>
+		<result property="menuUrl" column="menu_url"/>
+		<result property="createTime" column="create_time"/>
+        <result property="orderNum" column="order_num"/>
+	</resultMap>
+    
+     <!--查询 Menu 根据roleid  -->
+    <sql id="condition">
+		<if test="role != null"> and role = #{role}</if>
+		<if test="parent_id != null"> and parent_id = #{parent_id}</if>
+	</sql>
+	<select id="queryMenuByRoleId" parameterType="map" resultMap="menuMap">
+			select 
+			  * 
+			from
+			  tb_adtive_menu t 
+			where t.parent_id = #{parentId} 
+			  and t.id in 
+			  (select 
+			    t.meun_id 
+			  from
+			    tb_adtive_role_menu t
+			  where t.role_id = #{roleId})
+			 order by order_num
+	</select>
+	<!-- 根据parentId得到子菜单 -->
+	<select id="selectNemusByParentId" resultMap="childMenuMap" parameterType="int">
+		select
+		*
+		from
+		tb_adtive_menu
+		where parent_id=#{parentId}
+		order by
+		order_num
+	</select>
+	 <!-- 查询 Menu  -->
+	<select id="queryMenuById" parameterType="Integer" resultMap="menuMap1">
+			select * from  tb_adtive_menu t where t.parent_id = #{parentId} 
+	</select>
+	
+	 <!--添加 Menu -->
+	<insert id="addMenu" parameterType="Menu" >
+    	<selectKey keyProperty="id" order="BEFORE" resultType="int">
+    		select max(id)+1 from tb_adtive_menu
+    	</selectKey>
+    		insert into tb_adtive_menu(id,parent_id,menu_name,menu_url,create_time,order_num) values(#{id},#{parentId},#{menuName},#{menuUrl},#{createTime},#{orderNum})
+    </insert>
+	
+	 <!-- 根据id删除 Menu -->
+	<delete id="deleteMenuById" parameterType="Integer" >
+    		delete from tb_adtive_menu where id=#{id}
+    </delete>
+    
+     <!-- 根据名字 得到 Menu -->
+    <select id="queryMenuId"  parameterType="String" resultMap="menuMap"> 
+    		select * from tb_adtive_menu where menu_name = #{menuName}
+    </select>
+    
+    <!--查所有  -->
+    <select id="queryAll" resultMap="menuMap">
+    		select  * from  tb_adtive_menu
+    </select>
+
+
+	<!-- 根据roleId得到菜单列表 -->
+	<select id="getMenuByRoleId" parameterType="Integer" resultMap="menuMap">
+		select * from tb_adtive_menu menu,tb_adtive_role_menu rm
+		where menu.id=rm.meun_id and rm.role_id=#{roleId}
+	</select>
+
+
+	<!-- 根据用户Id 查询 -->
+	<select id="getMenuById" parameterType="Integer" resultMap="menuMap">
+		select
+		*
+		from
+		tb_adtive_menu
+		where
+		1=1
+		and id=#{menuId}
+	</select>
+
+	<!-- 根据parentId修改parentId把二级菜单改为一级菜单 -->
+	<select id="updateParentId" parameterType="Integer">
+		update tb_adtive_menu
+		set parent_id = 0
+		where parent_id = #{parentId}
+	</select>
+
+
+
+	<update id="update" parameterType="menu">
+		update
+		tb_adtive_menu
+		set
+		parent_id=#{parentId},
+		menu_name=#{menuName},
+		menu_url=#{menuUrl}
+		where
+		id=#{id}
+	</update>
+
+
+	<!-- 根据parentId删除menu -->
+	<select id="deleteMenuByParentId" parameterType="Integer">
+		delete from tb_adtive_menu where parent_id = #{menuId}
+	</select>
+</mapper>

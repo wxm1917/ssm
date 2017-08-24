@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.vatestar.cm.dao.AdmediaDao">
+
+    <!-- 插入一条数据 -->
+    <insert id="insertvalue" parameterType="admedia" useGeneratedKeys="true" keyProperty="id">
+       insert into tb_adtive_media(id,mediasname,whight,hight,ptype) values(
+         #{id},
+         #{mediasname},
+         #{whight},
+         #{hight},
+         #{ptype}
+         )
+    </insert>
+    
+    <!-- 删除一条数据 -->
+    <delete id="remedia" parameterType="admedia">
+    	delete from tb_adtive_media where id = #{id}
+    </delete>
+    
+    <!-- 根据id得到Admedia -->
+    <select id="quarymedia" parameterType="String" resultType="admedia">
+        select * from  tb_adtive_media where  id=#{id}
+    </select> 
+	<!-- 获得所有媒体名称 -->
+    <select id="queryMedias"  resultType="admedia">
+   		 SELECT DISTINCT * FROM  tb_adtive_media ;
+    </select>
+</mapper>

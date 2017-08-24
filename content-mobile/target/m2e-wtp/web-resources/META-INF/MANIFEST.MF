@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Project-Name: contentmobile-content-mobile
+Built-By: 54015
+Project-Build-Version: 0.0.1-SNAPSHOT-dev-201708240649
+Project-Version: 0.0.1-SNAPSHOT
+Build-Jdk: 1.8.0_112
+Created-By: Maven Integration for Eclipse
+

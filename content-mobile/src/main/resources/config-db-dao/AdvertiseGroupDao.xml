@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.vatestar.cm.dao.AdvertiseGroupDao">
+    
+    <resultMap type="AdGroup" id="advertiseGroupMap" >
+    	<id property="id" column="id"/>
+       	<result property="userId" column="user_id"/>
+       	<result property="groupName" column="group_name"/>
+        <result property="generalBudget" column="general_budget"/>
+        <result property="dailyBudget" column="daily_budget"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="chargeModel" column="charge_model"/>
+        <result property="timeOrientation" column="time_orientation"/>
+        <result property="time" column="time"/>
+        <result property="regionalOrientation" column="regional_orientation"/>
+        <result property="city" column="city"/>
+        <result property="industryOrientation" column="industry_orientation"/>
+        <result property="industry" column="industry"/>
+        <result property="peopleOrientation" column="people_orientation"/>
+        <result property="sex" column="sex"/>
+        <result property="age" column="age"/>
+        <result property="education" column="education"/>
+        <result property="mediaOrientation" column="media_orientation"/>
+        <result property="media" column="media"/>
+        <result property="adPosition" column="ad_position"/>
+        <result property="adType" column="ad_type"/>
+        <result property="price" column="price"/>
+        <result property="status" column="status"/>
+       	<result property="cTime" column="ctime"/>
+       	<result property="updateDate" column="update_date"/>
+       	 	<result property="newsclient" column="newsclient"/>
+       	 	<result property="newsclientprice" column="newsclientprice"/>
+       	 	<result property="daynews" column="daynews"/>
+       	 	<result property="daynewstprice" column="daynewstprice"/>
+       	 	<result property="phonenews" column="phonenews"/>
+       	 	<result property="phonenewsprice" column="phonenewsprice"/>
+       	 	<result property="addage" column="addage"/>
+       	 	
+    </resultMap>
+    <!-- 广告组统计列表 (分页)-->
+    <select id="getDataList" parameterType="map" resultType="map">
+       select 
+         grop.*,
+         (select count(*) from tb_adtive_list ad where ad.status!=2 and  ad.group_id=grop.id) sumAd
+       from
+         tb_adtive_group grop
+       where
+       	 grop.user_id=#{userId}
+       order by grop.id desc
+       limit #{page},#{pageSize}
+    </select>
+    <!-- 广告组统计列表(不分页) -->
+    <select id="getAllGroup" parameterType="Integer" resultMap="advertiseGroupMap">
+       select 
+         *
+       from
+         tb_adtive_group
+       where
+       	 user_id=#{userId}
+       order by ctime DESC
+    </select>
+    <!-- 得到记录条数 -->
+    <select id="countData" parameterType="Integer" resultType="Integer">
+    	select count(*) from tb_adtive_group where user_id=#{userId}
+    </select>
+    <!-- 添加广告组 -->
+    <insert id="save" parameterType="CreativeData">
+    	insert into tb_adtive_group(user_id,group_name,general_budget,daily_budget,start_time,end_time,charge_model,
+    	time_orientation,time,regional_orientation,city,industry_orientation,industry,people_orientation,age,sex,
+    	education,media_orientation,media,ad_position,ad_type,price,status,ctime,newsclient,newsclientprice,daynews,daynewstprice,phonenews,phonenewsprice,addage)
+    	values(#{userId},#{groupName},#{generalBudget},#{dailyBudget},#{startTime},#{endTime},#{chargeModel},#{timeOrientation},
+    	#{time},#{regionalOrientation},#{city},#{industryOrientation},#{industry},#{peopleOrientation},#{age},#{sex},#{education},
+    	#{mediaOrientation},#{media},#{adPosition},#{adType},#{price},#{status},#{cTime},#{newsclient},#{newsclientprice},#{daynews},#{daynewstprice},#{phonenews},#{phonenewsprice},#{addage})
+    </insert>
+    <!-- 根据id得到广告组信息 -->
+    <select id="getGroupById" parameterType="Integer" resultMap="advertiseGroupMap">
+    	select * from tb_adtive_group where id=#{id}
+    </select>
+    
+        <!-- 广告数据汇总统计 -->
+    <select id="statisticsAll" parameterType="Integer" resultType="map">
+       	SELECT 
+		  SUM(adv) adv,
+		  SUM(ck) ck,
+		  SUM(cpm_charge) charge
+		from
+		  tb_adtive_data ad 
+		  left join tb_adtive_list al 
+		    on ad.creative_id = al.id 
+		  left join tb_adtive_group ag 
+		    on al.group_id = ag.id 
+		where 1 = 1 
+		  and ag.id = #{id}
+    </select>
+    
+    
+    
+    <!-- 根据广告组id得到创意信息详情 -->
+    <select id="gettatisticsCount" parameterType="Integer" resultType="Integer">
+		select 
+		  count(1) 
+		from
+		  (select 
+		    count(*) 
+		  from
+		    tb_adtive_data ad 
+		    left join tb_adtive_list al 
+		      on ad.creative_id = al.id 
+		    left join tb_adtive_group ag 
+		      on al.group_id = ag.id 
+ 		 where 1 = 1 
+		  and ag.id = #{id}
+		group by ad.ctime ) ad
+    </select>
+    <!-- 根据广告组id得到创意信息详情 -->
+    <select id="statistics" parameterType="map" resultType="map">
+    	select 
+		  sum(ad.adv) adv,
+		  sum(ad.ck) ck,
+		  sum(ad.cpm_charge) cpm_charge,
+		  ag.user_id,
+		  ad.ctime
+		from
+		  tb_adtive_data ad 
+		  left join tb_adtive_list al 
+		    on ad.creative_id = al.id 
+		  left join tb_adtive_group ag 
+		    on al.group_id = ag.id 
+		where 1 = 1 
+		  and ag.id = #{id}
+		group by ad.ctime 
+		order by ad.ctime 
+		DESC
+		limit #{offset},#{pageSize}
+    </select>
+    <!-- 添加广告组 -->
+    <update id="update" parameterType="CreativeData">
+    	update 
+    		tb_adtive_group
+    	set
+    		user_id=#{userId},
+    		group_name=#{groupName},
+    		general_budget=#{generalBudget},
+    		daily_budget=#{dailyBudget},
+    		start_time=#{startTime},
+    		end_time=#{endTime},
+    		charge_model=#{chargeModel},
+    		time_orientation=#{timeOrientation},
+    		time=#{time},
+    		regional_orientation=#{regionalOrientation},
+    		city=#{city},
+    		industry_orientation=#{industryOrientation},
+    		industry=#{industry},
+    		people_orientation=#{peopleOrientation},
+    		age=#{age},
+    		sex=#{sex},
+    		education=#{education},
+    		media_orientation=#{mediaOrientation},
+    		media=#{media},
+    		ad_position=#{adPosition},
+    		ad_type=#{adType},
+    		price=#{price},
+    		status=#{status},
+    		ctime=#{cTime},
+    		newsclient=#{newsclient},
+    		newsclientprice=#{newsclientprice},
+    		daynews=#{daynews},
+    		daynewstprice=#{daynewstprice},
+    		phonenews=#{phonenews},
+    		phonenewsprice=#{phonenewsprice},
+    		addage=#{addage}
+    	where
+    		id=#{id}
+    </update>
+    <!-- 开启选中广告组 -->
+    <update id="startCheckGroup" parameterType="string">
+    	update 
+    		tb_adtive_group
+    	set 
+    		status=0
+    	where 
+    		id in
+    		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+ 				#{item}  
+			</foreach> 
+    </update>
+    <!-- 暂停选中广告组 -->
+    <update id="pauseCheckGroup" parameterType="List">
+    	update 
+    		tb_adtive_group
+    	set 
+    		status=1
+    	where 
+    		id in
+    		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+ 				#{item}  
+			</foreach> 
+    </update>
+    <!-- 删除选中广告组 -->
+    <delete id="delCheckGroup" parameterType="string">
+    	delete from tb_adtive_group where 
+    	id in
+    		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+ 				#{item}  
+			</foreach> 
+    </delete>
+
+	<select id="queryByUserId" parameterType="Integer" resultMap="advertiseGroupMap">
+		select id from tb_adtive_group where user_id=#{userId}
+	</select>
+</mapper>

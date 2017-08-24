@@ -1,0 +1,70 @@
+﻿/*分页*/
+.pagebar {
+	text-align: center;
+	margin: 22px auto;
+	width: 900px;
+	line-height: 22px;
+	font-size: 14px;
+	vertical-align: middle;
+}
+
+.pagebar a {
+	display: inline-block;
+	color: #428bca;
+	padding: 2px;
+	border: 1px solid #428bca;
+	padding: 5px;
+	line-height: 14px;
+	text-decoration: none;
+	text-align: center;
+}
+
+.pagebar a:hover {
+	color: #428bca;
+	background: #e0e0e0;
+	border: 1px solid #428bca;
+}
+
+.pagebar .page-cur {
+	color: #FFF;
+	background: #428bca;
+	border: 1px solid #428bca;
+	padding: 5px;
+	line-height: 14px;
+}
+
+.pagebar .page-input {
+	margin: 0px 5px;
+	border: 1px solid #999;
+	width: 34px;
+	text-align: center;
+	font-size: 14px;
+	line-height: 24px;
+	height: 24px;
+	font-size: 14px;
+	padding: 5px;
+	border-radius: 0px;
+}
+
+.pagebar .page-select {
+	margin: 0px 5px;
+	border: 1px solid #999;
+	width: 65px;
+	text-align: center;
+	font-size: 14px;
+	line-height: 24px;
+	height: 24px;
+	font-size: 14px;
+	border-radius: 0px;
+}
+
+.pagebar .page-button {
+	margin: 0px 5px;
+	border: 1px solid #999;
+	width: 30px;
+	text-align: center;
+	font-size: 14px;
+	line-height: 24px;
+	height: 24px;
+	font-size: 14px;
+}

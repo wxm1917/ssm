@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.vatestar.cm.dao.AddGroupClassDao">
+    
+
+    <!-- 添加广告 -->
+    <insert id="insetGroupClass" parameterType="addGroupClass" keyProperty="id" useGeneratedKeys="true">
+    	INSERT INTO tb_adtive_group_class ( id,
+			groupName,
+			mediagroup,
+			tourl,
+			adPositionId,
+			startTime,
+			endTime,
+			settime,
+			competingProducts,
+			excode,
+			commodity,
+			starOrientation,
+			pindaoOrientation,
+			lanmuOrientation,
+			shipOrientation,
+			dianbOrientation,
+			voiceorientation,
+			voices,
+			regionalOrientation,
+			city,
+			peopleOrientation,
+			orient,
+			addage,
+			operatorOrientation,
+			operace,
+			deviceOrientation,
+			device,
+			terminalOrientation,
+			terminal,
+			chargeMode,
+			price,
+			medialabelone,
+			commodity_orientation,
+			scene_orientation,
+			facerecognition_orientation,
+			emotion_orientation,
+			music_orientation,
+			equipment_orientation,
+			facerecognition,
+			emotion,
+			filepath,
+			music,
+			equipment,
+			group_id,
+			user_id,
+			ctime )
+		VALUES( 
+			#{id},
+			#{groupName},
+			#{mediagroup},
+			#{tourl},
+			#{adPositionId},
+			#{startTime},
+			#{endTime},
+			#{settime},
+			#{competingProducts},
+			#{excode},
+			#{commodity},
+			#{starOrientation},
+			#{pindaoOrientation},
+			#{lanmuOrientation},
+			#{shipOrientation},
+			#{dianbOrientation},
+			#{voiceorientation},
+			#{voices},
+			#{regionalOrientation},
+			#{city},
+			#{peopleOrientation},
+			#{orient},
+			#{addage},
+			#{operatorOrientation},
+			#{operace},
+			#{deviceOrientation},
+			#{device},
+			#{terminalOrientation},
+			#{terminal},
+			#{chargeMode},
+			#{price},
+			#{medialabelone},
+			#{commodity_orientation},
+			#{scene_orientation},
+			#{facerecognition_orientation},
+			#{emotion_orientation},
+			#{music_orientation},
+			#{equipment_orientation},
+			#{facerecognition},
+			#{emotion},
+			#{filepath},
+			#{music},
+			#{equipment},
+			#{group_id},
+			#{user_id},
+			#{ctime}  )
+    </insert>
+ 	
+ 	<!--查询组类  -->
+    <select id="queryGroupClass" parameterType="Integer" resultType="addGroupClass">
+    	select * from tb_adtive_group_class where group_id = #{group_id} order  by id desc
+     </select>
+    
+    <!--查询广告  -->
+    <select id="queryGroupClassById" parameterType="Integer" resultType="addGroupClass">
+    	select * from tb_adtive_group_class where id = #{id} 
+    </select>
+    
+    <update id="updateGroupClass" parameterType="addGroupClass">
+    	update tb_adtive_group_class set group_name=#{group_name},
+    	live_media=#{live_media},
+    	video_media=#{video_media},
+    	planting_media=#{planting_media},
+    	commodity_orientation=#{commodity_orientation},
+    	commodity=#{commodity},
+    	scene_orientation=#{scene_orientation},
+		scene=#{scene},
+		facerecognition_orientation=#{facerecognition_orientation},
+		facerecognition=#{facerecognition},
+		emotion_orientation=#{emotion_orientation},
+		emotion=#{emotion},
+		voice_orientation=#{voice_orientation},
+		voice=#{voice},
+		music_orientation=#{music_orientation},
+		music=#{music},
+		equipment_orientation=#{equipment_orientation},
+		equipment=#{equipment},
+		terminal_orientation=#{terminal_orientation},
+		terminal=#{terminal},
+		media_group=#{media_group},
+		group_id=#{group_id},
+		user_id=#{user_id},
+		stuts=#{stuts}
+		where id = #{id} and user_id = #{user_id}
+    </update>
+    
+    <!-- 开启选中广告组 -->
+    <update id="startCheckGroup" parameterType="string">
+    	update 
+    		tb_adtive_group_class
+    	set 
+    		stuts=0
+    	where 
+    		id in
+    		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+ 				#{item}  
+			</foreach> 
+    </update>
+    <!-- 暂停选中广告组 -->
+    <update id="pauseCheckGroup" parameterType="List">
+    	update 
+    		tb_adtive_group_class
+    	set 
+    		stuts=1
+    	where 
+    		id in
+    		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+ 				#{item}  
+			</foreach> 
+    </update>
+    
+    
+    <!-- 删除选中广告
+    <delete id="delCheckAd" parameterType="List">
+    	delete from tb_adtive_list where 
+    	id in
+    		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+ 				#{item}  
+			</foreach> 
+    </delete>
+ 
+    <select id="queryGroupIdById" parameterType="List" resultType="Integer">
+      	  select group_id from tb_adtive_list t 
+    	  where 
+    		id in
+    		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+ 				#{item.id}  
+			</foreach>
+			group by group_id
+    </select>
+    批量更新
+    <update id="batchUpdate"  parameterType="java.util.List">
+          <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+                update tb_adtive_list 
+                <set>
+                  status=${item.status}
+                </set>
+                where id = ${item.id}
+         </foreach>
+    </update> -->
+</mapper>

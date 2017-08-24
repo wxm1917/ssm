@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.vatestar.cm.dao.AttrDao">
+    
+	  <resultMap type="Attr" id="attrMap" autoMapping="true" >
+		<id property="id" column="id"/>
+		<result property="userId" column="user_id" />
+		<result property="menuId" column="menu_id" />
+		<result property="parentId" column="parent_id" />
+    </resultMap>
+ 
+	
+    <!-- 插入字段 -->
+    <insert id="InsertValue" parameterType="Attr" >
+       insert into tb_adtive_user_attr(id,user_id,menu_id,parent_id) values(
+       null,
+         #{userId},
+         #{menuId},
+         #{parentId}
+         )
+    </insert>
+    
+    <!-- 查询字段 -->
+    <select id="quary" parameterType="map" resultMap="attrMap">
+        select 
+        *
+        from 
+        tb_adtive_user_attr
+        where
+        user_id=#{userId}
+        and
+        parent_id=#{parentId}
+        
+     </select> 
+       
+     <!-- 插入前删除字段 -->
+     <delete id="attrDelete" parameterType="Integer">
+    	delete from tb_adtive_user_attr where 
+    	parent_id=#{parentId}
+    </delete>
+    
+     <!-- 删除所有字段 -->
+     <delete id="deleteAllAttr" parameterType="Integer">
+    	delete from tb_adtive_user_attr where 
+    	user_id=#{userId}
+    </delete>
+    
+</mapper>

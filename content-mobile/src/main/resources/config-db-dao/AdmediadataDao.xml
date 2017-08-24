@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.vatestar.cm.dao.AdmediadataDao">
+
+    <!-- 插入数据 -->
+    <insert id="insertvalue" parameterType="admediadata" >
+       insert into tb_adtive_mediadata(id,medianame,filepath,mediatype,optimal,medialabelone,
+       medialabeltwo,medialabelthree,mediapid,userid,ctime) values(
+        #{id},
+        #{medianame},
+        #{filepath},
+        #{mediatype},
+        #{optimal},
+        #{medialabelone},
+        #{medialabeltwo},
+        #{medialabelthree},
+        #{mediapid},
+        #{userid},
+        #{ctime}
+         )
+    </insert>
+ 
+    <!--根据id 获取user的数据  -->
+    <select id="quarymedialist" resultType="admediadata" >
+        select * from  tb_adtive_mediadata   where id=#{0} and userid=#{1} 
+    </select> 
+	
+    <!-- 查询用户所有的数据 -->
+    <select id="quarymediadata" parameterType="int" resultType="admediadata" >
+        select * from  tb_adtive_mediadata where userid=#{id}  
+    </select> 
+    <!-- 查询总条数 -->
+	<select id="countData" parameterType="int" resultType="int" >
+        select count(1) from  tb_adtive_mediadata where userid=#{id}  
+    </select>
+	 <!-- 通过优化目标和标签查询媒体 -->
+	 <select id="quaryMedias" parameterType="admediadata" resultType="admediadata" >
+        select id , filepath  from  tb_adtive_mediadata where find_in_set(#{optimal}, optimal) and find_in_set(#{medialabelone}, medialabelone)  
+     </select> 
+    
+</mapper>

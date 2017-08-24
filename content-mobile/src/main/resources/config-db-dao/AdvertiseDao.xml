@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.vatestar.cm.dao.AdvertiseDao">
+    
+    <resultMap type="Creative" id="advertiseMap" >
+    	<id property="id" column="id"/>
+       	<result property="userId" column="creative_id"/>
+       	<result property="groupId" column="group_id"/>
+        <result property="adName" column="ad_name"/>
+        <result property="adImage" column="ad_image"/>
+        <result property="adWidth" column="ad_width"/>
+        <result property="adHeight" column="ad_height"/>
+        <result property="adType" column="ad_type"/>
+        <result property="status" column="status"/>
+        <result property="url" column="url"/>
+       	<result property="cTime" column="cTime"/>
+    </resultMap>
+     <sql id="condition">
+		<if test="id != null"> and id = #{id}</if>
+		<if test="groupId != null"> and group_id = #{groupId}</if>
+	</sql>
+    <!-- 创意汇总统计 -->
+    <select id="statisticsAll" parameterType="Integer" resultType="map">
+       	select
+		  sum(adv) adv,
+		  sum(ck) ck,
+		  sum(cpm_charge) charge
+		from
+		  tb_adtive_data ad 
+		where 1 = 1 
+		  and ad.creative_id = #{id}
+    </select>
+        <!-- 根据广告组id得到创意信息详情 -->
+    <select id="gettatisticsCount" parameterType="Integer" resultType="Integer">
+		select 
+		  count(1) 
+		from
+		  (select 
+		    count(*) 
+		  from
+		    tb_adtive_data ad 
+ 		 where 1 = 1 
+		  and ad.creative_id = #{id}
+		group by ad.ctime ) ad
+    </select>
+        <!-- 根据广告组id得到创意信息详情 -->
+    <select id="statistics" parameterType="map" resultType="map">
+    	select 
+		  sum(ad.adv) adv,
+		  sum(ad.ck) ck,
+		  sum(ad.cpm_charge) cpm_charge,
+		  ad.ctime
+		from
+		  tb_adtive_data ad 
+		where 1 = 1 
+		  and ad.creative_id = #{id}
+		<!--group by ad.ctime -->
+		order by ad.ctime 
+		DESC
+		limit #{offset},#{pageSize}
+    </select>
+    <!-- 广告组统计列表 -->
+    <select id="getDataList" parameterType="Creative" resultType="map">
+      <!--  select 
+         ad.*,
+         grop.group_name groupName
+       from
+         tb_adtive_list ad , tb_adtive_group grop 
+       where grop.id=ad.group_id
+       and grop.user_id=#{userId}
+       and ad.status !=2 
+       <if test="groupId !=null">
+     	and ad.group_id=#{groupId}
+       </if>
+       <if test="adName !=null">
+       	and ad.ad_name like '%${adName}%'
+       </if> -->
+       select * from tb_adtive_list where group_id=#{groupId}
+       order by id desc
+       limit #{pageOffset},#{pageSize}
+    </select>
+    <!-- 得到记录条数 -->
+    <select id="countData" parameterType="Creative" resultType="Integer">
+    	select count(*) 
+    	from tb_adtive_group grop,tb_adtive_list ad
+    	where grop.user_id=#{userId}
+    	and grop.id=ad.group_id
+    	and ad.status !=2
+    	<if test="groupId !=null">
+        	and ad.group_id=#{groupId}
+        </if>
+        <if test="adName !=null">
+       	and ad.ad_name like '%${adName}%'
+       </if>
+    </select>
+    <!-- 添加广告 -->
+    <insert id="save" parameterType="Creative">
+    	insert into tb_adtive_list(group_id,ad_name,ad_image,ad_width,ad_height,status,url,ctime)
+    	values(#{groupId},#{adName},#{adImage},#{adWidth},#{adHeight},#{status},#{url},#{cTime});
+    </insert>
+    <!-- 根据id得到广告信息 -->
+    <select id="getAdvertiseById" parameterType="Integer" resultMap="advertiseMap">
+    	select * from tb_adtive_list where id=#{ids} 
+    </select>
+    <!-- 删除选中广告-->
+    <delete id="delCheckAd" parameterType="List">
+    	delete from tb_adtive_list where 
+    	id in
+    		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+ 				#{item}  
+			</foreach> 
+    </delete>
+    <!-- 根据groupId删除advertise -->
+    <delete id="delAdvertiseByGroupId" parameterType="Integer">
+    	delete from tb_adtive_list where group_id=#{groupId}
+    </delete>
+    <select id="queryPageCount" parameterType="Creative" resultType="Integer">
+  	  select count(*) from tb_adtive_list t 
+    	where 1=1 
+    	<include refid="condition"/>
+    </select>
+    <select id="queryPage" parameterType="Creative" resultType="map">
+      	  select * from tb_adtive_list t 
+    	where 1=1 
+    	<include refid="condition"/>
+    	 limit #{pageOffset},#{pageSize}
+    </select>
+    <select id="queryByGroupId" parameterType="Integer" resultMap="advertiseMap">
+      	  select * from tb_adtive_list 
+    	  where group_id=#{groupId}
+    	<!--   and t.status !=2 -->
+    </select>
+    <select id="queryGroupIdById" parameterType="List" resultType="Integer">
+      	  select group_id from tb_adtive_list t 
+    	  where 
+    		id in
+    		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+ 				#{item.id}  
+			</foreach>
+			group by group_id
+    </select>
+    <!--批量更新-->
+    <update id="batchUpdate"  parameterType="java.util.List">
+          <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+                update tb_adtive_list 
+                <set>
+                  status=${item.status}
+                </set>
+                where id = ${item.id}
+         </foreach>
+    </update>
+</mapper>

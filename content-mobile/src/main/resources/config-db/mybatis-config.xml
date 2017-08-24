@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+    PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+	<settings>
+		<setting name="lazyLoadingEnabled" value="true" />
+		<setting name="cacheEnabled" value="true" />
+	</settings>
+	<typeAliases>
+		<typeAlias alias="TbAccount" type="com.vatestar.cm.entity.TbAccount"/>
+		<typeAlias alias="User" type="com.vatestar.cm.entity.User"/>
+		<typeAlias alias="MoneyLog" type="com.vatestar.cm.entity.MoneyLog"/>
+		<typeAlias alias="AdGroup" type="com.vatestar.cm.entity.AdGroup"/>
+		<typeAlias alias="Attr" type="com.vatestar.cm.entity.Attr"/>
+		<typeAlias alias="Creative" type="com.vatestar.cm.entity.Creative"/>
+		<typeAlias alias="CreativeData" type="com.vatestar.cm.entity.CreativeData"/>
+		<typeAlias alias="Dict" type="com.vatestar.cm.entity.Dict"/>
+		<typeAlias alias="EbsImgData" type="com.vatestar.cm.entity.EbsImgDate"/>
+		<typeAlias alias="Email" type="com.vatestar.cm.entity.Email"/>
+		<typeAlias alias="Menu" type="com.vatestar.cm.entity.Menu"/>
+        <typeAlias alias="Role" type="com.vatestar.cm.entity.Role"/>
+		<typeAlias alias="roleMenu" type="com.vatestar.cm.entity.RoleMenu" />
+		<typeAlias alias="addGroupClass" type="com.vatestar.cm.entity.AddGroupClass" />
+		<typeAlias alias="admedia" type="com.vatestar.cm.entity.Admedia" />
+		<typeAlias alias="admediadata" type="com.vatestar.cm.entity.Admediadata" />
+		<typeAlias alias="medialabel" type="com.vatestar.cm.entity.MediaLabel" />
+	</typeAliases>
+
+</configuration>

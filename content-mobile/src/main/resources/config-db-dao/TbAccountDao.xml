@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.vatestar.cm.dao.TbAccountDao">
+
+	<resultMap id="tbAccount" type="com.vatestar.cm.entity.TbAccount">
+		<result property="id" column="id" />
+		<result property="company" column="company" />
+		<result property="money" column="money" />
+		<result property="rtime" column="rtime" />
+	</resultMap>
+
+	<sql id="condition">
+		<if test="company != null"> and company = #{company}</if>
+	</sql>
+
+	<!-- 查询 账户 -->
+	<select id="findAccount" parameterType="tbAccount" resultMap="tbAccount">
+		select
+		*
+		from
+		tb_account
+		where 1=1
+		<include refid="condition" />
+	</select>
+
+	<!-- 添加账户 -->
+	<insert id="saveAccount" parameterType="tbAccount">
+		insert into tb_account (
+		company,
+		money,
+		rtime)
+		values(
+		#{company},
+		#{money},
+		#{rtime}
+		) ;
+	</insert>
+	<!-- 修改用户信息 -->
+	<update id="updateAccount" parameterType="tbAccount">
+		update tb_account
+		<set>
+			<if test="company!=null">company=#{company},</if>
+			<if test="money!=null">money=#{money}</if>
+		</set>
+		where
+		id=#{id}
+	</update>
+
+	<!-- 删除账户 -->
+	<update id="delAccount" parameterType="Integer">
+		delete
+		from
+		tb_account
+		where
+		id=#{id}
+	</update>
+
+
+
+</mapper>

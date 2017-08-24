@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context  
+    	http://www.springframework.org/schema/context/spring-context-4.0.xsd  
+     	http://www.springframework.org/schema/tx 
+        http://www.springframework.org/schema/tx/spring-tx-4.0.xsd           
+        http://www.springframework.org/schema/aop 
+        http://www.springframework.org/schema/aop/spring-aop-4.0.xsd 
+        http://www.springframework.org/schema/mvc 
+		http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+	">
+
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value="${datasource.druid.driverClassName}"></property>
+		<property name="url" value="${datasource.druid.url}"></property>
+		<property name="username" value="${datasource.druid.username}"></property>
+		<property name="password" value="${datasource.druid.password}"></property>
+		<property name="maxActive" value="${datasource.druid.maxActive}"></property>
+		<property name="minIdle" value="${datasource.druid.minIdle}"></property>
+		<property name="maxIdle" value="${datasource.druid.maxIdle}"></property>
+		<property name="maxWait" value="${datasource.druid.maxWait}"></property>
+		<property name="defaultAutoCommit" value="true"></property>
+		<property name="validationQuery" value="SELECT 1 from dual" />
+		<property name="testOnBorrow" value="${datasource.druid.testOnBorrow}" />
+	</bean>
+	<bean id="sqlStatementInterceptor" class="com.vatestar.filter.SqlStatementInterceptor" scope="prototype"></bean>
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean" scope="prototype">
+		<property name="dataSource" ref="dataSource" />
+		<property name="mapperLocations" value="classpath:config-db-dao/*Dao.xml" />
+		<property name="configLocation" value="classpath:config-db/mybatis-config.xml"/>
+		<property name="plugins">
+			<array>
+				<ref bean="sqlStatementInterceptor"/>
+			</array>
+		</property>
+		<property name="configurationProperties">
+			<props>
+				<prop key="dialect">mysql</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<bean name="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.vatestar.cm.dao" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+	</bean>
+
+	<bean id="baseDao" class="com.vatestar.server.common.mybatis.BaseDao">
+		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
+		<property name="dataBaseType">
+			<value type="com.vatestar.server.common.dao.DataBaseType">MYSQL</value>
+		</property>
+	</bean>
+
+	<!-- 使用annotation定义事务 -->
+	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" />
+
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<!-- <tx:advice id="txAdvicePortal" transaction-manager="transactionManager"> 
+		<tx:attributes> <tx:method name="save*" propagation="REQUIRED" /> <tx:method 
+		name="del*" propagation="REQUIRED" rollback-for="Exception"/> <tx:method 
+		name="insert*" propagation="REQUIRED" rollback-for="Exception" /> <tx:method 
+		name="add*" propagation="REQUIRED" rollback-for="Exception" /> <tx:method 
+		name="*" read-only="true" /> </tx:attributes> </tx:advice> -->
+
+	<!-- ############################################################################################### -->
+
+</beans>

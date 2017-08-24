@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.vatestar.cm.dao.AdvertiseDataDao">
+    
+    <resultMap type="CreativeData" id="advertiseDataMap" autoMapping="true">
+    	<id property="id" column="id"/>
+    	<result property="creativeId" column="creative_id"/>
+       	<result property="groupId" column="group_id"/>
+       	<result property="userId" column="user_id"/>
+       	<result property="adv" column="adv"/>
+        <result property="ck" column="ck"/>
+       	<result property="cTime" column="ctime"/>
+       	<result property="cpmCharge" column="cpm_charge"/>
+       	<result property="cpcCharge" column="cpc_charge"/>
+    </resultMap>
+    <!-- 广告数据汇总统计 -->
+    <select id="countAData" parameterType="Integer" resultType="map">
+       	SELECT 
+		  SUM(adv) adv,
+		  SUM(ck) ck,
+		  SUM(cpm_charge) charge
+		FROM
+		  tb_adtive_data ad 
+		LEFT JOIN
+		  tb_adtive_list al ON ad.creative_id=al.id
+		LEFT JOIN 
+		  tb_adtive_group ag ON al.group_id=ag.id
+		LEFT JOIN
+		  tb_adtive_user u ON ag.user_id=u.id
+		WHERE
+		  1=1
+		  AND u.id=#{userId}
+    </select>
+    
+    <!-- 广告数据统计列表(按天) -->
+    <select id="countADataListDay" parameterType="Integer" resultType="map">
+			select	
+			id,
+			adv,
+			ck,
+			user_id,
+			round(cpm_charge,2) cpm_charge,
+			round(cpc_charge,2) cpc_charge,
+			date_format(ctime,'%Y-%m-%d') ctime
+			from
+				tb_adtive_data
+			where
+				 user_id=#{userId}
+			order by id desc
+			limit #{page},#{pageSize} 
+    </select>
+    <!-- 得到记录条数 -->
+    <select id="countData" parameterType="Integer" resultType="Integer">
+			select 
+			  count(1) 
+			from
+			(
+			  select 
+			    count(1) 
+			  from
+			    tb_adtive_data ad 
+			    left join tb_adtive_list al 
+			      on ad.creative_id = al.id 
+			    left join tb_adtive_group ag 
+			      on al.group_id = ag.id 
+			    left join tb_adtive_user u 
+			      on ag.user_id = u.id 
+			  where 1 = 1 
+			    and u.id = #{userId} 
+			  group by ad.ctime ) df
+    </select>
+
+
+     <select id="queryall"  resultType="Integer" parameterType="Integer">
+       	SELECT
+		  count(1)
+		FROM
+		  tb_adtive_data 
+		 where user_id = #{userId}
+
+    </select>
+
+	<select id="queryByDate" parameterType="String" resultType="Integer">
+		SELECT
+			count(1)
+		from tb_adtive_data
+		where ctime=#{cTime}
+	</select>
+
+	<insert id="saveData" parameterType="CreativeData">
+		insert into tb_adtive_data (creative_id,group_id,user_id,adv,ck,cpm_charge,cpc_charge,str_to_date(ctime,'%Y-%m-%d')) values
+		(#{creativeId},#{groupId},#{userId},#{adv},#{ck},#{cpmCharge},#{cpcCharge},#{cTime})
+	</insert>
+		
+	<select id="queryexcel"  resultType="java.util.HashMap">
+		SELECT
+		date_format(ctime,'%Y-%m-%d') ctime,
+		round(adv*cpm_charge*0.001,2) cpsum,
+		adv,
+		ck,
+		ROUND(ck/adv,2)  ckrate,
+		round(cpm_charge,2) cpm,
+		round(cpc_charge,2) cpc
+		from tb_adtive_data where ctime  BETWEEN #{0} and #{1};
+	</select>
+</mapper>
